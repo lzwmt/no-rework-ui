@@ -22,6 +22,12 @@ What comes in the box:
 - **Templates included**: brief and change-request templates live in `templates/` — fill in the blanks and start.
 - **Agent-agnostic**: a single agent can run it end to end; if other design skills are installed in the environment, it calls them at the matching step instead of competing with them.
 
+## Latest updates (v1.4 – v1.6, Nov 2026)
+
+- **Implementation routes (v1.4)**: step one now picks an implementation route per page type. Admin/workspace pages in a new React 19 project follow the **Astryx design-system route**: 150+ accessible components and ready-made themes, component-first implementation with a CLI contract check before coding, and a component list plus bundle-size readout at acceptance. See `references/astryx-route.md`.
+- **Mini-program / multi-platform route (v1.5)**: projects targeting mini-programs, or shipping one codebase to mini-programs + H5 + apps, follow the **uni-app route**: an app-category review check before starting, a locked component-library choice, per-platform build artifacts and main-package size at acceptance, and a platform-review checklist for launch. The plugin marketplace is an optional step with a candidate list before any adoption. See `references/uni-app-route.md`.
+- **Step 2 completed (v1.6)**: after a direction is picked, multi-page projects expand every page into a high-fidelity static mock for confirmation, and pages with motion get a runnable motion sample with parameterized values before anything is locked. The lock is now three parts: tokens + per-page look + motion parameters, and implementation is delivered page-by-page against the locked mocks.
+
 ## Showcase
 
 One full run: the same brief (an annual-report board plus a short silent video for a fictional sleep app, "Qichi") given to three different AIs, each working independently with this workflow.
