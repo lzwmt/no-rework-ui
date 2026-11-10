@@ -38,6 +38,7 @@ description: >-
 9. 中后台成套轨道（Astryx 路线）：新建 React 19 项目的后台/工作区页默认走 Astryx 设计系统（版本钉 0.7.11），关 1 逐页判定路线、关 4 组件优先且先查 CLI 契约、关 5 交组件清单与体积读数，口径全文见 `references/astryx-route.md`。前台页/落地页走手写路线，原生 App 页走原生生态，均不走 Astryx；同项目前台不许混用 Astryx 组件。
 10. 小程序/多端轨道（uni-app 路线）：目标端含小程序或需多端同发的项目默认走 uni-app（Vue3+Vite，官方模板，依赖随模板锁定），关 1 判定同轮必做类目可过审性预检（过不了审不进本路线）、关 3 锁定组件库选型、关 4 组件优先、关 5 交多端构建产物核查与主包体积读数、关 6 按平台审核清单上线，口径全文见 `references/uni-app-route.md`。插件市场仅作可选步：仅用户点选才逛市场列候选表，执行者不许自行引进；与 Astryx 路线不重叠，既有 H5/Expo 项目不迁移。
 11. 关 2 补全（定版 v1.6 立）：方向选定后，多页项目必由出样者把选中方向扩成全页高保真静态稿、逐页过用户眼（单页项目跳过）；本轮有动效诉求时，由关 4 的实现者先出可运行的动效样张（真实素材与数据、参数变量化、路线约束内验可行性），用户实际打开看过才进关 3。关 3 的锁定自此是三件：tokens + 全页长相 + 动效参数；关 4 逐项对照交付，偏离走修改单。细则见 `references/gates.md` 关 2、关 3、关 4。
+12. 动效货架（2026-11-10 立）：手写路线关 4 加动效，先查 `references/aimran-picks.md` 精选索引取现成件（AIMRAN Library 814 件中精选 24），按索引纪律改 tokens、处理手机端触发方式；索引没有的才手写，或按索引给的全量目录现查。不适用于 Astryx 路线（用其组件自带动效口径）与 uni-app 路线（以其组件库为准）。
 
 ## 关口调度
 
@@ -46,7 +47,7 @@ description: >-
 | 关 1 | 执行本技能的 agent 问，用户答。Brief 用 `templates/brief.md` |
 | 关 2 | 先定标杆，出样按 `references/composition.md` 摆。UI UX Pro Max（推荐配合，若环境已安装；未安装时按本技能 references 的对应口径直接执行）定结构与组件选型。脱离参考图时，Taste（推荐配合，若环境已安装；未安装时按本技能 references 的对应口径直接执行）定原创方向。出样默认由执行本技能的 agent 本人出样（自出）。要走先生图时才读 `references/image-first.md` |
 | 关 3 | 不新调审美技能。按 `references/type-and-tokens.md` 锁定 |
-| 关 4 | 4a：执行本技能的 agent 定方案、写简报、做验收。标杆页、组件化、tokens 一致，按 `composition.md` 的【通用】【页面】条执行。4b：Stageshow 按它的 look → story → example → screen → choreograph → rehearse 走，look 一步把 4a 组件放进 Stage，不用 kit 自带外观。版式定版之后才用 Emil / animate（推荐配合，若环境已安装；未安装时按本技能 references 的对应口径直接执行）加动效。仪表盘、数据表、表单先判定路线：React 19 新项目读 `references/astryx-route.md`，其余读 `references/admin-workspace.md`；小程序/多端项目读 `references/uni-app-route.md` |
+| 关 4 | 4a：执行本技能的 agent 定方案、写简报、做验收。标杆页、组件化、tokens 一致，按 `composition.md` 的【通用】【页面】条执行。4b：Stageshow 按它的 look → story → example → screen → choreograph → rehearse 走，look 一步把 4a 组件放进 Stage，不用 kit 自带外观。版式定版之后才用 Emil / animate（推荐配合，若环境已安装；未安装时按本技能 references 的对应口径直接执行）加动效（现成件先查 AIMRAN 精选索引）。仪表盘、数据表、表单先判定路线：React 19 新项目读 `references/astryx-route.md`，其余读 `references/admin-workspace.md`；小程序/多端项目读 `references/uni-app-route.md` |
 | 关 5 | 按修改单改，加做 `composition.md` 第六节构图问答、标签碰撞检测、屏上数字反读，并跑 `references/density.md` 的密度校验脚本出 density.json（自查必须引用读数，见该文件第四节）；4b 另跑 Stageshow 的影片闸门。审查技能留到关 6 |
 | 关 6 | Impeccable（推荐配合，若环境已安装；未安装时按本技能 references 的对应口径直接执行）做 audit / polish。Hallmark（推荐配合，若环境已安装；未安装时按本技能 references 的对应口径直接执行）做 sloplint。只有 iOS 向 App 页才加 Apple Design / mobile-native（推荐配合，若环境已安装；未安装时按本技能 references 的对应口径直接执行）。评审小测试见 `references/review-and-rework.md` |
 
@@ -63,6 +64,7 @@ description: >-
 - `references/admin-workspace.md`：做仪表盘、数据表、表单这类工作区或后台页时读（非 React 项目的兜底口径）。
 - `references/astryx-route.md`：关 1 判定路线时读；判定走 Astryx 路线的后台页，关 2–5 都按它执行。
 - `references/uni-app-route.md`：关 1 判定路线时读；判定走 uni-app 路线的小程序/多端项目，关 1–6 都按它执行（含类目预检与插件市场可选步）。
+- `references/aimran-picks.md`：关 4 给手写路线页面加动效、取现成件时读；AIMRAN 精选 24 件按场景索引与取件纪律（改 tokens、手机端触发、无障碍保留）。
 - `references/composition.md`：关 2 出样、关 4 实现、关 5 验收时读。构图规矩，分【通用】【物料】【页面】三类。
 - `references/review-and-rework.md`：关 5 修改单循环、微调快车道，以及关 6 审查上线时读。
 

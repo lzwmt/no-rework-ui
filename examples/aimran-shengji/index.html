@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>声记 — 录音转文字，三步出稿</title>
+<style>
+/* ============ tokens（本页自定，替换原码默认配色） ============ */
+:root{
+  --brand:#0e7c66;        /* 主色：深青绿 */
+  --brand-strong:#0a5f4e;
+  --accent:#e8590c;       /* 强调橙 */
+  --hl-1:#ffd43b;         /* 荧光笔黄 */
+  --hl-2:#74c0fc;         /* 荧光笔蓝 */
+  --ink:#1c2321;          /* 正文 */
+  --ink-2:#5b6662;        /* 次级文字 */
+  --paper:#f7f6f2;        /* 页面底 */
+  --card:#ffffff;
+  --ok:#2f9e68;           /* 成功 */
+  --r-s:8px; --r-m:14px; --r-l:20px; --r-pill:999px;
+  --fs-xs:13px; --fs-s:15px; --fs-m:17px; --fs-l:22px; --fs-xl:30px;
+  --t-fast:.25s; --t-med:.45s; --t-slow:.9s;
+  --ease-out:cubic-bezier(.25,.1,.25,1);
+  --ease-spring:cubic-bezier(.34,1.56,.64,1);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:"PingFang SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;
+  background:var(--paper); color:var(--ink);
+  font-size:var(--fs-m); line-height:1.6;
+}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px}
+section{padding:56px 0}
+h1,h2{line-height:1.25;margin:0 0 .5em}
+h2{font-size:var(--fs-l)}
+.eyebrow{color:var(--brand);font-weight:700;font-size:var(--fs-xs);letter-spacing:.15em;margin:0 0 12px}
+.lead{color:var(--ink-2)}
+
+/* ============ 件1 uv-btn-shine：主行动按钮扫光（主特效位，全页唯一） ============ */
+/* 原码 hover 触发；手机改 3.8s 周期自动扫光（取件纪律3） */
+.uv-shine{
+  --c1:var(--brand); --s:var(--fs-m); --k:1;
+  font:inherit;font-size:var(--s);font-weight:600;line-height:1;
+  padding:1em 2em;border:0;border-radius:var(--r-pill);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;position:relative;overflow:hidden;
+  color:#fff;background:var(--c1);
+  box-shadow:0 8px 24px -10px var(--c1);
+  transition:transform var(--t-med) var(--ease-out);
+}
+.uv-shine::after{
+  content:"";position:absolute;inset:-50% auto -50% -60%;width:40%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
+  transform:skewX(-25deg);
+}
+.uv-shine:hover::after{left:130%}
+.uv-shine:hover{transform:translateY(-2px)}
+.uv-shine:active{transform:scale(.97)}
+@media (hover:none){
+  .uv-shine::after{
+    inset:-50% auto -50% -60%;
+    animation:shine-auto calc(3.8s / var(--k)) var(--ease-out) infinite;
+  }
+}
+@keyframes shine-auto{
+  0%,55%{left:-60%}
+  80%,100%{left:130%}
+}
+@media (prefers-reduced-motion:reduce){
+  .uv-shine::after{animation:none;left:-60%}
+  .uv-shine,.uv-shine:hover{transform:none;transition:none}
+}
+
+/* ============ 件2 uv-tx-marker-highlight：荧光笔划重点（卖点区，滚动触发） ============ */
+.uv-tmh{--c1:var(--hl-1);--c2:var(--hl-2);max-width:34em}
+.uv-tmh p{margin:0;font-size:var(--fs-l);line-height:1.7;font-weight:500;letter-spacing:-.01em}
+.uv-tmh mark{
+  color:inherit;padding:0 .12em;margin:0 -.12em;
+  border-radius:.4em .25em .45em .2em;
+  background:linear-gradient(100deg,transparent .3em,color-mix(in srgb,var(--c1) 85%,transparent) .4em,var(--c1) 92%,transparent) 0 85%/0% 72% no-repeat;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;
+  transition:background-size calc(.9s / var(--k,1)) var(--ease-out);
+}
+.uv-tmh .m2{background-image:linear-gradient(100deg,transparent .3em,color-mix(in srgb,var(--c2) 85%,transparent) .4em,var(--c2) 92%,transparent);transition-delay:.8s}
+.uv-tmh .m3{transition-delay:1.6s}
+.uv-tmh.on mark{background-size:100% 72%}
+@media (prefers-color-scheme:dark){
+  .uv-tmh mark{color:#111}
+}
+@media (prefers-reduced-motion:reduce){
+  .uv-tmh mark{transition:none;background-size:100% 72%}
+}
+
+/* ============ 件3 uv-btn-ripple：点击波纹（次级按钮，反馈类） ============ */
+.uv-ripple{
+  --c1:var(--brand-strong);--s:var(--fs-s);
+  font:inherit;font-size:var(--s);font-weight:600;line-height:1;
+  padding:.9em 1.6em;border:0;border-radius:var(--r-pill);cursor:pointer;
+  -webkit-tap-highlight-color:transparent;position:relative;overflow:hidden;
+  color:#fff;background:var(--c1);
+}
+.uv-ripple i{position:absolute;width:10px;height:10px;margin:-5px;border-radius:50%;background:rgba(255,255,255,.55);pointer-events:none;animation:uv-rip calc(.7s / var(--k,1)) var(--ease-out) forwards}
+@keyframes uv-rip{to{transform:scale(40);opacity:0}}
+@media (prefers-reduced-motion:reduce){
+  .uv-ripple i{animation-duration:.01s}
+}
+
+/* ============ 件4 uv-tg-billing：月付/年付切换 ============ */
+.uv-tbi{
+  --c1:var(--brand);--c2:var(--ok);--s:var(--fs-s);
+  font:inherit;font-size:var(--s);color:var(--ink);
+  -webkit-tap-highlight-color:transparent;position:relative;
+  display:inline-flex;align-items:center;gap:.65em;cursor:pointer;
+  user-select:none;font-weight:600;
+}
+.uv-tbi input{position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none}
+.uv-tbi .m,.uv-tbi .y{transition:color .3s var(--ease-out),opacity .3s var(--ease-out)}
+.uv-tbi .y{opacity:.45}
+.uv-tbi .tr{position:relative;display:block;width:3.4em;height:1.9em;border-radius:1em;background:var(--c1);box-shadow:inset 0 .1em .25em rgba(0,0,0,.2)}
+.uv-tbi .kn{position:absolute;left:.2em;top:.2em;width:1.5em;height:1.5em;border-radius:50%;background:#fff;box-shadow:0 .15em .35em rgba(0,0,0,.25);transition:left calc(.45s / var(--k,1)) var(--ease-spring)}
+.uv-tbi .sv{padding:.35em .7em;border-radius:1em;font-size:.78em;font-weight:700;color:#fff;background:var(--c2);transform:scale(.4) rotate(-12deg);opacity:0;transition:transform calc(.45s / var(--k,1)) var(--ease-spring),opacity .2s var(--ease-out)}
+.uv-tbi input:checked ~ .tr .kn{left:calc(100% - 1.7em)}
+.uv-tbi input:checked ~ .m{opacity:.45}
+.uv-tbi input:checked ~ .y{opacity:1}
+.uv-tbi input:checked ~ .sv{transform:none;opacity:1}
+.uv-tbi input:focus-visible ~ .tr{outline:2px solid var(--c1);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.uv-tbi .kn,.uv-tbi .sv{transition-duration:.01s}}
+
+/* ============ 件5 uv-rd-plans：套餐单选（整行点选） ============ */
+.uv-rdp{
+  --c1:var(--brand);--s:var(--fs-s);
+  font:inherit;font-size:var(--s);color:var(--ink);
+  -webkit-tap-highlight-color:transparent;
+  display:flex;flex-direction:column;gap:.6em;max-width:30em;
+}
+.uv-rdp input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+.uv-rdp label{cursor:pointer}
+.uv-rdp .pl{
+  position:relative;display:flex;align-items:center;gap:.7em;
+  padding:.95em 1.1em;border-radius:var(--r-m);background:var(--card);
+  box-shadow:inset 0 0 0 1.8px color-mix(in srgb,var(--ink) 10%,transparent);
+  transition:all calc(.38s / var(--k,1)) var(--ease-spring);
+}
+.uv-rdp .ck{display:grid;place-items:center;width:1.3em;height:1.3em;flex:0 0 auto;border-radius:50%;box-shadow:inset 0 0 0 1.8px color-mix(in srgb,var(--ink) 20%,transparent);transition:all .3s var(--ease-out)}
+.uv-rdp .ck svg{width:.85em;height:.85em;color:#fff}
+.uv-rdp .ck svg path{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .32s var(--ease-out)}
+.uv-rdp b{flex:1;font-weight:650}
+.uv-rdp em{font-style:normal;font-weight:700}
+.uv-rdp em span{font-weight:500;font-size:.72em;opacity:.5}
+.uv-rdp label:hover .pl{box-shadow:inset 0 0 0 1.8px color-mix(in srgb,var(--c1) 40%,transparent)}
+.uv-rdp input:checked + .pl{scale:1.045;box-shadow:inset 0 0 0 2px var(--c1),0 14px 30px color-mix(in srgb,var(--c1) 20%,transparent)}
+.uv-rdp input:checked + .pl .ck{background:var(--c1);box-shadow:inset 0 0 0 1.8px var(--c1)}
+.uv-rdp input:checked + .pl .ck svg path{stroke-dashoffset:0}
+.uv-rdp input:checked + .pl em{color:var(--c1)}
+@media (prefers-reduced-motion:reduce){
+  .uv-rdp .pl,.uv-rdp .ck,.uv-rdp .ck svg path{transition-duration:.01s}
+  .uv-rdp input:checked + .pl{scale:1}
+}
+
+/* ============ 件6 uv-ld-status-words：多步等待（圆环+状态文案逐句上滑） ============ */
+.uv-lsw{
+  --c1:var(--brand);--c2:#b2e0d6;--s:var(--fs-s);
+  font:inherit;font-size:var(--s);color:var(--ink);
+  -webkit-tap-highlight-color:transparent;
+  display:inline-flex;align-items:center;gap:.7em;
+  padding:.7em 1.1em .7em .8em;border-radius:2em;
+  background:color-mix(in srgb,var(--ink) 4%,var(--card));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--ink) 8%,transparent),0 .8em 1.6em -1em rgba(0,0,0,.4);
+}
+.uv-lsw .sp{width:1.3em;height:1.3em;border-radius:50%;border:.18em solid var(--c2);border-top-color:var(--c1);animation:uv-lsw-s calc(.8s / var(--k,1)) linear infinite}
+.uv-lsw .wd{display:grid;height:1.4em;overflow:hidden;font-weight:600}
+.uv-lsw .wd span{grid-area:1/1;line-height:1.4em;white-space:nowrap;opacity:0;transform:translateY(100%);animation:uv-lsw calc(6s / var(--k,1)) var(--ease-out) infinite}
+.uv-lsw .wd span:nth-child(2){animation-delay:1.5s}
+.uv-lsw .wd span:nth-child(3){animation-delay:3s}
+@keyframes uv-lsw{
+  0%{opacity:0;transform:translateY(100%)}
+  5%,22%{opacity:1;transform:none}
+  27%,100%{opacity:0;transform:translateY(-100%)}
+}
+@keyframes uv-lsw-s{to{transform:rotate(1turn)}}
+@media (prefers-reduced-motion:reduce){
+  .uv-lsw .wd span{animation:none}
+  .uv-lsw .wd span:last-child{opacity:1;transform:none}
+  .uv-lsw .sp{animation-duration:2.4s}
+}
+
+/* ============ 件7 uv-toast-success：成功提示（点击按钮触发演示） ============ */
+.uv-zs{--c1:var(--brand);--s:var(--fs-s);font:inherit;font-size:var(--s);position:relative}
+.uv-zs .toast{
+  position:fixed;z-index:9;left:50%;bottom:1.5em;
+  display:flex;align-items:center;gap:.75em;width:18em;max-width:calc(100vw - 40px);
+  padding:.85em;border-radius:var(--r-m);color:var(--ink);background:var(--card);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink) 10%,transparent),0 18px 45px rgba(0,0,0,.18);
+  opacity:0;pointer-events:none;
+  transform:translate(-50%,3em) scale(.82);
+}
+.uv-zs .toast i{display:grid;place-items:center;width:2.2em;height:2.2em;border-radius:50%;font-style:normal;color:#fff;background:var(--ok)}
+.uv-zs .toast span{display:grid;gap:.15em}
+.uv-zs .toast small{opacity:.5}
+.uv-zs .toast.show{animation:uv-zs calc(3.4s / var(--k,1)) var(--ease-spring)}
+@keyframes uv-zs{
+  0%{opacity:0;transform:translate(-50%,3em) scale(.82)}
+  12%,82%{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
+  100%{opacity:0;transform:translate(-50%,1.5em) scale(.92)}
+}
+@media (prefers-reduced-motion:reduce){
+  .uv-zs .toast.show{animation:none;opacity:1;transform:translate(-50%,0) scale(1)}
+}
+
+/* ============ 版式（先版式后动效） ============ */
+.hero{padding:72px 0 48px;text-align:left}
+.hero h1{font-size:var(--fs-xl);font-weight:800;margin:0 0 .4em}
+.hero p{color:var(--ink-2);max-width:26em}
+.cta-row{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.note{font-size:var(--fs-xs);color:var(--ink-2)}
+.demo{background:var(--card);border-radius:var(--r-l);padding:24px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--ink) 8%,transparent)}
+.demo + .demo{margin-top:16px}
+.demo h3{margin:0 0 12px;font-size:var(--fs-s);color:var(--ink-2);font-weight:600}
+.steps li{margin-bottom:6px}
+footer{padding:40px 0 64px;color:var(--ink-2);font-size:var(--fs-xs)}
+@media (min-width:640px){
+  .hero h1{font-size:40px}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+}
+</style>
+</head>
+<body>
+
+<!-- 1 首屏 -->
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">声记 SHENGJI</p>
+    <h1>录音进去，成稿出来</h1>
+    <p>会上说的、课里讲的、访谈聊的——上传录音，3 步拿到整理好的文字稿。</p>
+    <div class="cta-row">
+      <button class="uv-shine" id="tryBtn">免费试用</button>
+      <span class="note">免费版每月 60 分钟，无需装 App</span>
+    </div>
+  </div>
+</header>
+
+<!-- 2 卖点 -->
+<section>
+  <div class="wrap cols">
+    <div>
+      <p class="eyebrow">为什么用声记</p>
+      <h2>四个理由，一条划重点</h2>
+      <ul>
+        <li>中文识别准确率高，专有名词可自定义词库</li>
+        <li>自动区分说话人，双人访谈不再粘成一团</li>
+        <li>一键生成摘要、待办、章节标题</li>
+        <li>导出 Word / Markdown / 字幕 SRT</li>
+      </ul>
+    </div>
+    <div class="uv-tmh" id="hl">
+      <p><mark class="m1">1 小时的录音，</mark>声记 <mark class="m2">5 分钟出稿</mark>，你说的话 <mark class="m3">一句都不会丢</mark>。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3 定价 -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">定价</p>
+    <h2>先免费，够用再升级</h2>
+    <label class="uv-tbi">
+      <input type="checkbox" role="switch" id="cycle">
+      <span class="m">月付</span>
+      <span class="tr"><span class="kn"></span></span>
+      <span class="y">年付</span>
+      <span class="sv">省 20%</span>
+    </label>
+    <div style="margin-top:20px">
+      <div class="uv-rdp" id="plans">
+        <label><input type="radio" name="rdp" value="free" checked>
+          <span class="pl"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" pathLength="1"/></svg></span>
+          <b>免费版 · 60 分钟/月</b><em class="price" data-m="0" data-y="0">¥0<span>/月</span></em></span></label>
+        <label><input type="radio" name="rdp" value="std">
+          <span class="pl"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" pathLength="1"/></svg></span>
+          <b>标准版 · 600 分钟/月</b><em class="price" data-m="29" data-y="23">¥29<span>/月</span></em></span></label>
+        <label><input type="radio" name="rdp" value="pro">
+          <span class="pl"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" pathLength="1"/></svg></span>
+          <b>专业版 · 3000 分钟/月</b><em class="price" data-m="79" data-y="63">¥79<span>/月</span></em></span></label>
+      </div>
+      <p class="note" id="planNote">年付按月折算显示：¥23 ≈ ¥278/年（省 20%）</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 等待状态演示 -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">转写过程</p>
+    <h2>上传之后发生了什么</h2>
+    <div class="demo">
+      <h3>演示：正在转写「10 月产品评审会.m4a」（42 分钟录音）</h3>
+      <div class="uv-lsw" role="status">
+        <span class="sp" aria-hidden="true"></span>
+        <span class="wd"><span>第 1 步 · 上传录音</span><span>第 2 步 · 识别转写</span><span>第 3 步 · 区分说话人</span></span>
+      </div>
+      <ol class="steps" style="margin-top:16px;font-size:var(--fs-s);color:var(--ink-2)">
+        <li>上传：42 分钟录音约 30 秒传完</li>
+        <li>识别：约 5 分钟出全文（1 小时录音 5 分钟出稿，即卖点区的承诺）</li>
+        <li>整理：自动区分 3 位说话人并生成摘要，共 3 步</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- 5 成功提示演示 -->
+<section>
+  <div class="wrap">
+    <p class="eyebrow">完成反馈</p>
+    <h2>转写完成，一眼确认</h2>
+    <div class="demo uv-zs">
+      <button class="uv-ripple" id="doneBtn">模拟：转写完成，查看提示</button>
+      <div class="toast" role="status" aria-live="polite">
+        <i>✓</i>
+        <span><b>「10 月产品评审会」转写完成</b><small>全文 8,240 字 · 用时 5 分钟</small></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">声记 · 虚构演示页面 · 单文件 HTML，无后端</div>
+</footer>
+
+<script>
+// uv-tx-marker-highlight：滚动触发划重点
+(function(){
+  var el=document.getElementById("hl");if(!el)return;
+  var go=function(){el.classList.remove("on");void el.offsetWidth;requestAnimationFrame(function(){el.classList.add("on")})};
+  var io=new IntersectionObserver(function(es){if(es[0].isIntersecting){go();io.disconnect()}},{threshold:.6});
+  io.observe(el);
+})();
+
+// uv-btn-ripple：点哪儿从哪儿扩散
+document.querySelectorAll(".uv-ripple").forEach(function(el){
+  el.addEventListener("pointerdown",function(e){
+    var r=el.getBoundingClientRect(),i=document.createElement("i");
+    i.style.left=(e.clientX-r.left)+"px";i.style.top=(e.clientY-r.top)+"px";
+    el.appendChild(i);setTimeout(function(){i.remove()},900);
+  });
+});
+
+// uv-tg-billing + uv-rd-plans：月付/年付联动（¥23 = 278/12 ≈ 23，见 REPORT 对账）
+(function(){
+  var tog=document.getElementById("cycle");
+  document.querySelectorAll("#plans .price").forEach(function(p){
+    tog.addEventListener("change",function(){
+      var y=tog.checked;
+      p.innerHTML="¥"+(y?p.dataset.y:p.dataset.m)+"<span>/月</span>"+(y?"（年付折算）":"");
+    });
+  });
+})();
+
+// uv-toast-success：点击触发成功提示
+document.getElementById("doneBtn").addEventListener("click",function(){
+  var t=document.querySelector(".uv-zs .toast");
+  t.classList.remove("show");void t.offsetWidth;t.classList.add("show");
+});
+</script>
+</body>
+</html>
